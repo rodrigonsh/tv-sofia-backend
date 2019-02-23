@@ -1,0 +1,12 @@
+{
+  "short_name": "tv-sofia",
+  "name": "tv-sofia",
+  "icons": [{
+    "src": "icon.png",
+    "type": "image/png",
+    "sizes": "192x192"
+  }],
+  "start_url": "/?utm_source=homescreen",
+  "background_color": "#999",
+  "theme_color": "#6000ff"
+}
