@@ -14,51 +14,17 @@ body
   height: 100vh;
 }
 
-#splash
-{
-  display: none;
-  background-image: url(/img/tap-here.gif);
-  background-position: center;
-  background-size: contain;
-  background-color: #fff9;
-  background-repeat: no-repeat;
-  width: 100vw;
-  height: 100vh;
-  mix-blend-mode: luminosity;
-}
-
 #local { display: none; } 
-#web { display: flex; }
-body.local #local{ display: flex; }
+#web { display: block; }
+body.local #local{ display: block; }
 body.local #web{ display: none; }
-
-.logo
-{
-  font-family: 'Gochi Hand', cursive;
-  font-size: 50px;
-  line-height: 1em;
-  color: white;
-  text-shadow: 0px 5px 10px #000;
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  margin: 0px;
-}
 
 iframe,
 video
 {
   display: block;
-  /*margin: 48px;
-  width: calc( 100vw - 96px );
-  height: calc( 100vh - 96px );
-  border-radius: 8px;
-  box-shadow: 0px 5px 10px #000;*/
-  
   width: 100vw;
   height: 100vh;
-  
-  background: black;
 }
 
 video
