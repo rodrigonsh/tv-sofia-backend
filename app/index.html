@@ -18,13 +18,17 @@
 </head>
 
 <body>
+  
   <!--[if lte IE 9]>
-    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+    <p class="browserupgrade">
+      <strong>Navegador não suportado</strong>. 
+      Por favor <a href="https://browsehappy.com/">Atualize seu Navegador</a>
+      para melhorar sua experiência e segurança.
+    </p>
   <![endif]-->
 
-
   <div id='local'>
-    <video muted autoplay></video>
+    <video poster="/img/hand_animation_800x600.gif" autoplay></video>
   </div>
 
   <div id='web'>
@@ -41,8 +45,10 @@
   </div>
 
   <script src="js/vendor/modernizr-3.6.0.min.js"></script>
+  <script src="js/moment.min.js"></script>
   <script src="js/alpha.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/config.js"></script>
 
   <!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. 
   <script>

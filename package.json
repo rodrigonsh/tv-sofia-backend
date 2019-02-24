@@ -23,6 +23,7 @@
   "homepage": "https://github.com/rodrigonsh/tv-sofia-backend#readme",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "internal-ip": "^4.2.0"
   }
 }

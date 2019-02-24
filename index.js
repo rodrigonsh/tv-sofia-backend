@@ -3,6 +3,9 @@ const app = express()
 const cors = require('cors')
 const fs = require('fs')
 const port = 3000
+const internal = require('internal-ip')
+
+console.log('TV SOFIA')
 
 app.use(cors())
 
@@ -26,4 +29,9 @@ app.get('/playlists', function(req, res)
 
 
 
-app.listen(port, () => console.log(`TV SOFIA http://localhost:${port}`))
+app.listen(port, function()
+{
+  var ip = internal.v4.sync()
+  console.log(`http://localhost:${port}`)
+  console.log(`http://${ip}:${port}`)
+})

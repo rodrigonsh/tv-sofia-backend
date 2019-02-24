@@ -1,12 +1,13 @@
 var playlists = null
+var dirKeys = []
 var local = true
-var key = 1
+var key = 0
 var lastKey = null
 var $video = q('video')
 var $iframe = q('iframe')
 var bag = []
-
-
+var schedule = []
+var firstTap = true;
 
 //https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 function shuffle(array) {
@@ -28,20 +29,53 @@ function shuffle(array) {
   return array;
 }
 
-function playNext()
+function refreshKey()
 {
+
+  key = 0
+  let now = moment();
+  let td = now.format("YYYY-MM-DD ");
+  
+  for( var i=0; i < schedule.length; i++ )
+  {
+    
+    let s = schedule[i]
+     
+    let start = moment( td + s.start+':00' )
+    let end = moment( td + s.end+':00' )
+    
+    if ( s.week[ now.day()+1 ] != "0" )
+    {
+      if ( now.isBetween(start, end) )
+      {
+        
+        //console.log( dirKeys.indexOf(s.folder), s.folder );
+        
+        if (dirKeys.indexOf(s.folder) > -1)
+        {
+          key = key | 1 << dirKeys.indexOf( s.folder );
+        }
+        
+        else  console.error(s.folder, 'not in playlist');
+                
+      }
+    }
+    
+    
+    
+  }
   
   if ( key != lastKey )
   {
     
     bag = []
   
-    let keys = Object.keys(playlists)
-    for( var i=0; i < keys.length; i++ )
+    for( var i=0; i < dirKeys.length; i++ )
     {
       if ( checkBoolean(key, i) )
       {
-        bag = bag.concat( playlists[keys[i]] )
+        console.log(i, dirKeys[i]);
+        bag = bag.concat( playlists[dirKeys[i]] )
       }
     }
     
@@ -51,17 +85,30 @@ function playNext()
     
   }  
   
+  console.log("refreshKey", key, bag.length, 'videos to play');
   
+}
+
+
+
+
+function playNext()
+{
+  
+  console.log('playNext:', bag.length);
   
   bag.push( bag.shift() )
   
+  
   let movie = bag[0]
   
-  console.log(movie)
+  console.log("playNext movie", movie)
   
   if ( local )
   {
-    $video.src = "http://localhost:3000/v/"+movie
+    $video.src = "/v/"+movie
+    
+    if (!firstTap) $video.play();
   }
   
   else
@@ -73,9 +120,43 @@ function playNext()
   
 }
 
+
+setInterval(refreshKey, 60*1000)
+
 $video.addEventListener('ended', playNext)
-$video.addEventListener('error', playNext)
-$video.addEventListener('click', playNext)
+$video.addEventListener('error', console.error)
+$video.addEventListener('suspended', console.log)
+
+$video.addEventListener('playing', function()
+{
+  $video.classList.add('playing');
+  $video.classList.remove('stalled');
+})
+
+$video.addEventListener('stalled', function()
+{
+  $video.classList.add('stalled');
+})
+
+$video.addEventListener('wating', function()
+{
+  $video.classList.remove('stalled');
+})
+
+$video.addEventListener('click', function()
+{
+  
+  if (firstTap)
+  {
+   $video.play();
+   $video.setAttribute('poster', '/img/loading.gif');
+   firstTap = false;
+  }
+  
+  else playNext();
+  
+})
+
 addEventListener('keyup', playNext)
 
 addEventListener('playlistsReady', function()
@@ -84,19 +165,18 @@ addEventListener('playlistsReady', function()
   if (local) q('body').classList.add('local');
   else q('body').classList.remove('local');
   
-  let keys = Object.keys(playlists)
-  for( var i=0; i < keys.length; i++ )
+  dirKeys = Object.keys(playlists)
+  for( var i=0; i < dirKeys.length; i++ )
   {
-    let list = playlists[keys[i]]
+    let list = playlists[dirKeys[i]]
     for( var j=0; j < list.length; j++  )
     {
-      list[j] = keys[i]+"/"+list[j]
+      list[j] = dirKeys[i]+"/"+list[j]
     }
     
-    shuffle(playlists[keys[i]]);
+    shuffle(playlists[dirKeys[i]]);
     
   }
-  
   
   playNext();
   
@@ -104,7 +184,7 @@ addEventListener('playlistsReady', function()
 
 function updatePlaylists()
 {
-  fetch("http://localhost:3000/playlists", {mode: 'cors'})
+  fetch("/playlists", {mode: 'cors'})
   .then(function(response)
   {
     return response.json();
@@ -120,20 +200,11 @@ function updatePlaylists()
   .catch(function(error)
   {
     local = false;
-    // TODO; load cached playlists.json 
     alert(error);
   })
 }
 
-if (localStorage.getItem('playlists'))
-{
-  playlists = JSON.parse(localStorage.getItem('playlists'))
-  emit('playlistsReady');
-}
-else
-{
-  updatePlaylists();
-}
+
 
 addEventListener('playlistsReady', function()
 {
@@ -144,3 +215,30 @@ addEventListener('playlistsReady', function()
   console.log('helloe');
   
 })
+
+
+
+function program( weekdays, start, end, folder )
+{
+  
+  schedule.push
+  ({
+    week: weekdays,
+    start: start,
+    end: end,
+    folder: folder    
+    
+  })
+  
+  
+  refreshKey();
+  
+}
+
+if (localStorage.getItem('playlists'))
+{
+  playlists = JSON.parse(localStorage.getItem('playlists'))
+  emit('playlistsReady');
+}
+
+updatePlaylists();
