@@ -44,7 +44,7 @@ function refreshKey()
     let start = moment( td + s.start+':00' )
     let end = moment( td + s.end+':00' )
     
-    if ( s.week[ now.day()+1 ] != "0" )
+    if ( s.week[ now.day() ] != "0" )
     {
       if ( now.isBetween(start, end) )
       {
@@ -94,7 +94,8 @@ function refreshKey()
 
 function playNext()
 {
-  
+ 
+  $video.setAttribute('poster', '/img/loading.gif');
   console.log('playNext:', bag.length);
   
   bag.push( bag.shift() )
@@ -124,24 +125,7 @@ function playNext()
 setInterval(refreshKey, 60*1000)
 
 $video.addEventListener('ended', playNext)
-$video.addEventListener('error', console.error)
-$video.addEventListener('suspended', console.log)
-
-$video.addEventListener('playing', function()
-{
-  $video.classList.add('playing');
-  $video.classList.remove('stalled');
-})
-
-$video.addEventListener('stalled', function()
-{
-  $video.classList.add('stalled');
-})
-
-$video.addEventListener('wating', function()
-{
-  $video.classList.remove('stalled');
-})
+$video.addEventListener('error', playNext)
 
 $video.addEventListener('click', function()
 {
@@ -149,15 +133,15 @@ $video.addEventListener('click', function()
   if (firstTap)
   {
    $video.play();
-   $video.setAttribute('poster', '/img/loading.gif');
    firstTap = false;
   }
   
-  else playNext();
-  
 })
 
-addEventListener('keyup', playNext)
+addEventListener('keyup', function(ev)
+{
+  if( ev.which != 32 ) playNext();
+})
 
 addEventListener('playlistsReady', function()
 {
